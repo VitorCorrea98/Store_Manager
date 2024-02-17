@@ -2,10 +2,11 @@ const { expect } = require('chai');
 const sinon = require('sinon');
 const { productsFromDB } = require('../mocks/products.mock');
 const { productsService } = require('../../../src/services');
+const { productsModel } = require('../../../src/models');
 
 describe('Realizando testes - PRODUCT SERVICE', function () { 
-  it('Recuperando um unico produto', async function () {
-    sinon.stub(productsService, 'getAllProducts').resolves({ status: 200, data: productsFromDB });
+  it('Recuperando todos os produtos', async function () {
+    sinon.stub(productsModel, 'getAllProducts').resolves(productsFromDB);
 
     const responseService = await productsService.getAllProducts();
     expect(responseService).to.be.an('object');
