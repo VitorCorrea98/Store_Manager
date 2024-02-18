@@ -32,6 +32,32 @@ describe('Realizando testes - PRODUCT SERVICE', function () {
     expect(responseService.data).to.deep.equal({ message: 'Product not found' });
   });
 
+  it('Cadastra um produto com sucesso', async function () {
+    sinon.stub(productsModel, 'insertProduct').resolves(4);
+    const newProduct = {
+      name: 'teste',
+    };
+
+    const responseService = await productsService.insertProduct(newProduct);
+    expect(responseService).to.be.an('object');
+    expect(responseService.status).to.be.equal(201);
+    expect(responseService.data).to.haveOwnProperty('id', 4);
+    expect(responseService.data).to.haveOwnProperty('name', 'teste');
+  });
+
+  it('Cadastra um produto com fracasso', async function () {
+    sinon.stub(productsModel, 'insertProduct').resolves(4);
+    const newProduct = {
+      name: 'teste',
+    };
+
+    const responseService = await productsService.insertProduct(newProduct);
+    expect(responseService).to.be.an('object');
+    expect(responseService.status).to.be.equal(201);
+    expect(responseService.data).to.haveOwnProperty('id', 4);
+    expect(responseService.data).to.haveOwnProperty('name', 'teste');
+  });
+  
   afterEach(function () {
     sinon.restore();
   });

@@ -4,7 +4,7 @@ const connection = require('../../../src/models/connection');
 const { productsMock } = require('../mocks');
 const { productsModel } = require('../../../src/models');
 
-describe('Realizando testes - PRODUCT MODEL', function () { 
+describe('Realizando testes - PRODUCT CONTROLLER', function () { 
   it('Recuperando products com sucesso', async function () {
     sinon.stub(connection, 'execute').resolves([productsMock.productsFromDB]);
 

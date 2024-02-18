@@ -12,7 +12,6 @@ const getAllSales = async () => {
   ON sal.id = salp.sale_id
   ORDER BY salp.sale_id ASC;
   `);
-  console.log({ sales });
   return sales;
 };
 

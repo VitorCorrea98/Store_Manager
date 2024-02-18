@@ -1,4 +1,5 @@
 const { productsModel } = require('../models');
+const { productValidations } = require('./validations');
 
 const STATUS = {
   ok: 200,
@@ -20,7 +21,12 @@ const getProductsByID = async (product) => {
 };
 
 const insertProduct = async (product) => {
+  const error = productValidations.productValidation(product);
+
+  if (error) return { status: error.status, data: error.data };
+  
   const insertId = await productsModel.insertProduct(product);
+
   const newProduct = {
     id: insertId,
     name: product.name,
