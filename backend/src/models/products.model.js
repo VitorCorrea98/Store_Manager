@@ -10,7 +10,13 @@ const getProductByID = async (produtc) => {
   return response;
 };
 
+const insertProduct = async (product) => {
+  const [{ insertId }] = await conn.execute('INSERT INTO products(name) VALUES(?)', [product.name]);
+  return insertId;
+};
+
 module.exports = {
   getAllProducts,
   getProductByID,
+  insertProduct,
 };
