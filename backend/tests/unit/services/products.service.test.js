@@ -48,14 +48,13 @@ describe('Realizando testes - PRODUCT SERVICE', function () {
   it('Cadastra um produto com fracasso', async function () {
     sinon.stub(productsModel, 'insertProduct').resolves(4);
     const newProduct = {
-      name: 'teste',
+      name: 'fail',
     };
 
     const responseService = await productsService.insertProduct(newProduct);
     expect(responseService).to.be.an('object');
-    expect(responseService.status).to.be.equal(201);
-    expect(responseService.data).to.haveOwnProperty('id', 4);
-    expect(responseService.data).to.haveOwnProperty('name', 'teste');
+    expect(responseService.status).to.be.equal(422);
+    expect(responseService.data).to.haveOwnProperty('message', '"name" length must be at least 5 characters long');
   });
   
   afterEach(function () {

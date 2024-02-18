@@ -30,7 +30,21 @@ const getIdSales = async (params) => {
   return sales;
 };
 
+const insertSale = async () => {
+  const [{ insertId }] = await conn.execute('INSERT INTO sales(date) VALUES(CURRENT_TIMESTAMP())');
+  return insertId;
+};
+
+const insertSaleProduct = async (product, saleID) => {
+  const [teste] = await conn.execute(`
+  INSERT INTO sales_products(sale_id, product_id, quantity)
+    VALUES (?, ?, ?)`, [saleID, product.productId, product.quantity]);
+  return teste;
+};
+
 module.exports = {
   getAllSales,
   getIdSales,
+  insertSale,
+  insertSaleProduct,
 };
