@@ -7,7 +7,6 @@ const getAllProducts = async () => {
 
 const getProductByID = async (product) => {
   const [[response]] = await conn.execute('SELECT * FROM products WHERE id = ?', [product.id]);
-  console.log({ product, response });
   return response;
 };
 
@@ -22,9 +21,13 @@ const updateProduct = async (product, id) => {
   console.log({ response });
   return response;
 };
+
+const deleteProduct = async (id) => conn.execute('DELETE FROM products WHERE id = ?', [id]);
+
 module.exports = {
   getAllProducts,
   getProductByID,
   insertProduct,
   updateProduct,
+  deleteProduct,
 };

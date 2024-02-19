@@ -5,6 +5,8 @@ const { productsService } = require('../../../src/services');
 const { productsModel } = require('../../../src/models');
 const { productValidations } = require('../../../src/services/validations');
 
+const notFound = 'Product not found';
+
 describe('Realizando testes - PRODUCT SERVICE', function () { 
   it('Recuperando todos os produtos', async function () {
     sinon.stub(productsModel, 'getAllProducts').resolves(productsMock.productsFromDB);
@@ -30,7 +32,7 @@ describe('Realizando testes - PRODUCT SERVICE', function () {
     const responseService = await productsService.getProductsByID(productsMock.productWrongID);
     expect(responseService).to.be.an('object');
     expect(responseService.status).to.deep.equal(404);
-    expect(responseService.data).to.deep.equal({ message: 'Product not found' });
+    expect(responseService.data).to.deep.equal({ message: notFound });
   });
 
   it('Cadastra um produto com sucesso', async function () {
@@ -71,7 +73,6 @@ describe('Realizando testes - PRODUCT SERVICE', function () {
     };
 
     const serviceResponse = await productsService.updateProduct(newProduct, 2);
-    console.log({ serviceResponse });
 
     expect(serviceResponse).to.be.an('object');
     expect(serviceResponse).to.haveOwnProperty('status', 200);
@@ -90,7 +91,6 @@ describe('Realizando testes - PRODUCT SERVICE', function () {
     };
 
     const serviceResponse = await productsService.updateProduct(newProduct, 2);
-    console.log({ serviceResponse });
 
     expect(serviceResponse).to.be.an('object');
     expect(serviceResponse).to.haveOwnProperty('status', 400);
@@ -108,7 +108,6 @@ describe('Realizando testes - PRODUCT SERVICE', function () {
     };
 
     const serviceResponse = await productsService.updateProduct(newProduct, 2);
-    console.log({ serviceResponse });
 
     expect(serviceResponse).to.be.an('object');
     expect(serviceResponse).to.haveOwnProperty('status', 422);
@@ -119,19 +118,48 @@ describe('Realizando testes - PRODUCT SERVICE', function () {
   it('Edita um produto com a chave name com um ID não existente', async function () {
     sinon.stub(productsModel, 'updateProduct').resolves(null);
     sinon.stub(productsModel, 'getProductByID').resolves({ id: 2, name: 'Vitao' });
-    sinon.stub(productValidations, 'checkForProdctExisting').resolves({ status: 404, data: { message: 'Product not found' } });
+    sinon.stub(productValidations, 'checkForProdctExisting').resolves({ status: 404, data: { message: notFound } });
 
     const newProduct = {
       name: 'Vitao',
     };
 
     const serviceResponse = await productsService.updateProduct(newProduct, 99);
-    console.log({ serviceResponse });
 
     expect(serviceResponse).to.be.an('object');
     expect(serviceResponse).to.haveOwnProperty('status', 404);
     expect(serviceResponse).to.haveOwnProperty('data');
-    expect(serviceResponse.data).to.haveOwnProperty('message', 'Product not found');
+    expect(serviceResponse.data).to.haveOwnProperty('message', notFound);
+  });
+
+  it('Deleta um produto com ID existente', async function () {
+    sinon.stub(productValidations, 'checkForProdctExisting').resolves(null);
+    
+    const serviceResponse = await productsService.deleteProduct(2);
+
+    expect(serviceResponse).to.be.an('object');
+    expect(serviceResponse).to.haveOwnProperty('status', 204);
+    expect(serviceResponse).to.not.haveOwnProperty('data');
+  });
+
+  it('Deleta um produto com ID inexistente', async function () {
+    sinon.stub(productValidations, 'checkForProdctExisting').resolves({ status: 404, data: { message: notFound } });
+    
+    const serviceResponse = await productsService.deleteProduct(99);
+    expect(serviceResponse).to.be.an('object');
+    expect(serviceResponse).to.haveOwnProperty('status', 404);
+    expect(serviceResponse).to.haveOwnProperty('data');
+    expect(serviceResponse.data).to.haveOwnProperty('message', notFound);
+  });
+
+  it('Check validations delete do produto', async function () {
+    sinon.stub(productsModel, 'getProductByID').resolves(null);
+    
+    const serviceResponse = await productValidations.checkForProdctExisting(99);
+    expect(serviceResponse).to.be.an('object');
+    expect(serviceResponse).to.haveOwnProperty('status', 404);
+    expect(serviceResponse).to.haveOwnProperty('data');
+    expect(serviceResponse.data).to.haveOwnProperty('message', notFound);
   });
   
   afterEach(function () {

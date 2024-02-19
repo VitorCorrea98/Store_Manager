@@ -1,24 +1,42 @@
 const { expect } = require('chai');
+const chai = require('chai');
 const sinon = require('sinon');
-const connection = require('../../../src/models/connection');
+const sinonChai = require('sinon-chai');
 const { productsMock } = require('../mocks');
-const { productsModel } = require('../../../src/models');
+const { productsService } = require('../../../src/services');
+const { productsController } = require('../../../src/controllers');
+
+chai.use(sinonChai);
 
 describe('Realizando testes - PRODUCT CONTROLLER', function () { 
   it('Recuperando products com sucesso', async function () {
-    sinon.stub(connection, 'execute').resolves([productsMock.productsFromDB]);
+    sinon.stub(productsService, 'getAllProducts').resolves({ status: 200, data: productsMock.productsFromDB });
 
-    const products = await productsModel.getAllProducts();
-    expect(products).to.be.an('array');
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub(),
+    };
+
+    await productsController.getAllProducts(null, res);
+    expect(res.status).to.have.been.calledWith(200);
+    expect(res.json).to.have.been.calledWith(productsMock.productsFromDB);
   });
 
-  it('Recuperando um único produto', async function () {
-    const product = productsMock.productsFromDB[0];
+  it('Recuperando um unico produto com ID valido', async function () {
+    sinon.stub(productsService, 'getAllProducts').resolves({ status: 200, data: productsMock.singleProduct });
 
-    sinon.stub(connection, 'execute').resolves([[product]]);
+    const req = {
+      params: { id: 1 },
+    };
 
-    const modelResponse = await productsModel.getProductByID(product);
-    expect(modelResponse).to.be.an('object');
+    const res = {
+      status: sinon.stub().returnsThis(),
+      json: sinon.stub(),
+    };
+
+    await productsController.getAllProducts(req, res);
+    expect(res.status).to.have.been.calledWith(200);
+    expect(res.json).to.have.been.calledWith(productsMock.singleProduct);
   });
 
   afterEach(function () {
