@@ -4,6 +4,7 @@ const STATUS = {
   ok: 200,
   notFound: 404,
   inserted: 201,
+  deleted: 204,
 };
 
 const getAllSales = async () => {
@@ -28,8 +29,17 @@ const insertSaleProduct = async (products) => {
   return { status: STATUS.inserted, data: saleProduct };
 };
 
+const deleteSale = async (id) => {
+  const findSale = await salesModel.getIdSales({ id });
+  if (!findSale.length) return { status: STATUS.notFound, data: { message: 'Sale not found' } };
+
+  await salesModel.deleteSale(id);
+  return { status: STATUS.deleted };
+};
+
 module.exports = {
   getAllSales,
   getSaleID,
   insertSaleProduct,
+  deleteSale,
 };

@@ -5,6 +5,7 @@ const STATUS = {
   ok: 200,
   notFound: 404,
   inserted: 201,
+  deleted: 204,
 };
 
 const getAllProducts = async () => {
@@ -43,7 +44,7 @@ const updateProduct = async (product, id) => {
   await productsModel.updateProduct(product, id);
   const updatedProduct = await productsModel.getProductByID({ id });
 
-  return { status: 200, data: updatedProduct };
+  return { status: STATUS.ok, data: updatedProduct };
 };
 
 const deleteProduct = async (id) => {
@@ -51,7 +52,7 @@ const deleteProduct = async (id) => {
   if (noProduct) return { status: noProduct.status, data: noProduct.data };
 
   await productsModel.deleteProduct(id);
-  return { status: 204 };
+  return { status: STATUS.deleted };
 };
 
 module.exports = {

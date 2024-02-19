@@ -11,4 +11,6 @@ route.post(
   salesController.insertSaleProduct,
 );
 
+route.delete('/:id', salesController.deleteSale);
+
 module.exports = route;
