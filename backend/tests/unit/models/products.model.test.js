@@ -32,6 +32,17 @@ describe('Realizando testes - PRODUCT MODEL', function () {
     expect(modelResponse).to.deep.equal(4);
   });
 
+  it('Updating a product', async function () {
+    sinon.stub(productsModel, 'updateProduct').resolves(4);
+
+    const newProduct = {
+      name: 'teste',
+    };
+
+    const modelResponse = await productsModel.updateProduct(newProduct, 4);
+    expect(modelResponse).to.deep.equal(4);
+  });
+
   afterEach(function () {
     sinon.restore();
   });

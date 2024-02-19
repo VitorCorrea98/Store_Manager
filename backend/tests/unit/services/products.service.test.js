@@ -3,6 +3,7 @@ const sinon = require('sinon');
 const { productsMock } = require('../mocks');
 const { productsService } = require('../../../src/services');
 const { productsModel } = require('../../../src/models');
+const { productValidations } = require('../../../src/services/validations');
 
 describe('Realizando testes - PRODUCT SERVICE', function () { 
   it('Recuperando todos os produtos', async function () {
@@ -47,14 +48,90 @@ describe('Realizando testes - PRODUCT SERVICE', function () {
 
   it('Cadastra um produto com fracasso', async function () {
     sinon.stub(productsModel, 'insertProduct').resolves(4);
+
     const newProduct = {
-      name: 'fail',
+      teste: 'Vitao',
     };
 
-    const responseService = await productsService.insertProduct(newProduct);
-    expect(responseService).to.be.an('object');
-    expect(responseService.status).to.be.equal(422);
-    expect(responseService.data).to.haveOwnProperty('message', '"name" length must be at least 5 characters long');
+    const serviceResponse = await productsService.insertProduct(newProduct); 
+
+    expect(serviceResponse).to.be.an('object');
+    expect(serviceResponse).to.haveOwnProperty('status', 400);
+    expect(serviceResponse).to.haveOwnProperty('data');
+    expect(serviceResponse.data).to.haveOwnProperty('message', '"name" is required');
+  });
+
+  it('Edita um produto', async function () {
+    sinon.stub(productsModel, 'updateProduct').resolves(null);
+    sinon.stub(productsModel, 'getProductByID').resolves({ id: 2, name: 'Vitao' });
+    sinon.stub(productValidations, 'checkForProdctExisting').resolves(null);
+
+    const newProduct = {
+      name: 'Vitao',
+    };
+
+    const serviceResponse = await productsService.updateProduct(newProduct, 2);
+    console.log({ serviceResponse });
+
+    expect(serviceResponse).to.be.an('object');
+    expect(serviceResponse).to.haveOwnProperty('status', 200);
+    expect(serviceResponse).to.haveOwnProperty('data');
+    expect(serviceResponse.data).to.haveOwnProperty('id', 2);
+    expect(serviceResponse.data).to.haveOwnProperty('name', 'Vitao');
+  });
+
+  it('Edita um produto sem a chave name', async function () {
+    sinon.stub(productsModel, 'updateProduct').resolves(null);
+    sinon.stub(productsModel, 'getProductByID').resolves({ id: 2, name: 'Vitao' });
+    sinon.stub(productValidations, 'checkForProdctExisting').resolves(null);
+
+    const newProduct = {
+      teste: 'Vitao',
+    };
+
+    const serviceResponse = await productsService.updateProduct(newProduct, 2);
+    console.log({ serviceResponse });
+
+    expect(serviceResponse).to.be.an('object');
+    expect(serviceResponse).to.haveOwnProperty('status', 400);
+    expect(serviceResponse).to.haveOwnProperty('data');
+    expect(serviceResponse.data).to.haveOwnProperty('message', '"name" is required');
+  });
+
+  it('Edita um produto com a chave name com menos de 5 caracteres', async function () {
+    sinon.stub(productsModel, 'updateProduct').resolves(null);
+    sinon.stub(productsModel, 'getProductByID').resolves({ id: 2, name: 'Vitao' });
+    sinon.stub(productValidations, 'checkForProdctExisting').resolves(null);
+
+    const newProduct = {
+      name: 'Vi',
+    };
+
+    const serviceResponse = await productsService.updateProduct(newProduct, 2);
+    console.log({ serviceResponse });
+
+    expect(serviceResponse).to.be.an('object');
+    expect(serviceResponse).to.haveOwnProperty('status', 422);
+    expect(serviceResponse).to.haveOwnProperty('data');
+    expect(serviceResponse.data).to.haveOwnProperty('message', '"name" length must be at least 5 characters long');
+  });
+
+  it('Edita um produto com a chave name com um ID não existente', async function () {
+    sinon.stub(productsModel, 'updateProduct').resolves(null);
+    sinon.stub(productsModel, 'getProductByID').resolves({ id: 2, name: 'Vitao' });
+    sinon.stub(productValidations, 'checkForProdctExisting').resolves({ status: 404, data: { message: 'Product not found' } });
+
+    const newProduct = {
+      name: 'Vitao',
+    };
+
+    const serviceResponse = await productsService.updateProduct(newProduct, 99);
+    console.log({ serviceResponse });
+
+    expect(serviceResponse).to.be.an('object');
+    expect(serviceResponse).to.haveOwnProperty('status', 404);
+    expect(serviceResponse).to.haveOwnProperty('data');
+    expect(serviceResponse.data).to.haveOwnProperty('message', 'Product not found');
   });
   
   afterEach(function () {

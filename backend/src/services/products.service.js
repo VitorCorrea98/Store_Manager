@@ -22,9 +22,8 @@ const getProductsByID = async (product) => {
 
 const insertProduct = async (product) => {
   const error = productValidations.productValidation(product);
-
   if (error) return { status: error.status, data: error.data };
-  
+
   const insertId = await productsModel.insertProduct(product);
 
   const newProduct = {
@@ -34,8 +33,22 @@ const insertProduct = async (product) => {
   return { status: STATUS.inserted, data: newProduct };
 };
 
+const updateProduct = async (product, id) => {
+  const error = productValidations.productValidation(product);
+  if (error) return { status: error.status, data: error.data };
+
+  const noProduct = await productValidations.checkForProdctExisting({ id });
+  if (noProduct) return { status: noProduct.status, data: noProduct.data };
+
+  await productsModel.updateProduct(product, id);
+  const updatedProduct = await productsModel.getProductByID({ id });
+
+  return { status: 200, data: updatedProduct };
+};
+
 module.exports = {
   getAllProducts,
   getProductsByID,
   insertProduct,
+  updateProduct,
 };
