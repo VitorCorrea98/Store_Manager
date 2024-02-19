@@ -19,9 +19,8 @@ const getSaleID = async (params) => {
 
 const insertSaleProduct = async (products) => {
   const saleId = await salesModel.insertSale();
-  const test = Promise.all(await products
+  await Promise.all(await products
     .map((product) => salesModel.insertSaleProduct(product, saleId)));
-  console.log({ test });
   const saleProduct = {
     id: saleId,
     itemsSold: products,

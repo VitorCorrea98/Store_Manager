@@ -25,6 +25,27 @@ describe('Realizando testes - SALES MODEL', function () {
     expect(modelResponse).to.have.length(2);
   });
 
+  it('Pegando o ID da nova sale cadastrada', async function () {
+    sinon.stub(connection, 'execute').resolves([{ insertId: 3 }]);
+
+    const sales = await salesModel.insertSale();
+    expect(sales).to.be.an('number');
+    expect(sales).to.be.equal(3);
+  });
+
+  it('Cadastra uma nova sale', async function () {
+    sinon.stub(connection, 'execute').resolves([{ insertId: 3 }]);
+
+    const product = {
+      productId: 2,
+      quantity: 6,
+    };
+
+    const sales = await salesModel.insertSaleProduct(product, 3);
+    expect(sales).to.be.an('object');
+    expect(sales).to.haveOwnProperty('insertId', 3);
+  });
+
   afterEach(function () {
     sinon.restore();
   });

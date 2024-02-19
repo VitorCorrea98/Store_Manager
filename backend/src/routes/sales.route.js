@@ -1,8 +1,14 @@
 const route = require('express').Router();
 const { salesController } = require('../controllers');
+const { salesMiddlewares } = require('../middlewares');
 
 route.get('/', salesController.getAllSales);
 route.get('/:id', salesController.getSalesId);
-route.post('/', salesController.insertSaleProduct);
+route.post(
+  '/', 
+  salesMiddlewares.checkForKeys,
+  salesMiddlewares.checkIfProductIdExists,
+  salesController.insertSaleProduct,
+);
 
 module.exports = route;
