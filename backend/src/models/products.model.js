@@ -18,7 +18,6 @@ const insertProduct = async (product) => {
 const updateProduct = async (product, id) => {
   const [response] = await conn
     .execute('UPDATE products SET name = ? WHERE id = ?', [product.name, id]);
-  console.log({ response });
   return response;
 };
 

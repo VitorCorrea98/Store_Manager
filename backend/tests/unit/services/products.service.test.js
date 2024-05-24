@@ -134,6 +134,7 @@ describe('Realizando testes - PRODUCT SERVICE', function () {
 
   it('Deleta um produto com ID existente', async function () {
     sinon.stub(productValidations, 'checkForProdctExisting').resolves(null);
+    sinon.stub(productsModel, 'deleteProduct').resolves();
     
     const serviceResponse = await productsService.deleteProduct(2);
 

@@ -7,14 +7,15 @@ const getAllSales = async (_req, res) => {
 
 const getSalesId = async (req, res) => {
   const { params } = req;
+  
   const { status, data } = await salesService.getSaleID(params);
   return res.status(status).json(data);
 };
 
 const insertSaleProduct = async (req, res) => {
   const products = req.body;
+
   const { status, data } = await salesService.insertSaleProduct(products);
-  console.log({ data });
   return res.status(status).json(data);
 };
 
